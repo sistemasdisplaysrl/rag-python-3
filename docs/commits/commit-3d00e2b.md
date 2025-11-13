@@ -44,9 +44,13 @@ Ejemplo, uso erróneo:
 }
 ```
 
-Resultado:
+Resultado, (2 contextos):
 
 ![Descripción](../images/2025-11-12_20-44.png)
+
+## Conclusiones
+
+De momento se va a mantener la propiedad `doc_id` en caso extremo que un área requiera más de un documento, **lo ideal es que cada área utilice UN SOLO DOCUMENTO**.
 
 # Consultas
 
