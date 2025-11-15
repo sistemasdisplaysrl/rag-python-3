@@ -14,6 +14,8 @@ La ingesta de documentos en la REST API sigue el siguiente formato:
 
 Es importante mencionar la REST API no recibe documentos, **el cliente no sube archivos**, solo establece la ruta **en el servidor** donde se halla el recurso.
 
+![](../images/2025-11-15_17-40.png)
+
 Más allá del archivo, los parámetros más importantes son `doc_id` y `replace_existing`que se encargará de **reemplazar la versión anterior del documento.**
 
 ## Remplazo de Versión Anterior
