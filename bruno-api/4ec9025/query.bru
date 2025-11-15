@@ -1,0 +1,21 @@
+meta {
+  name: query
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{BASEURL}}/query-pdf?question=De qué trata este documento&top_k=5
+  body: none
+  auth: inherit
+}
+
+params:query {
+  question: De qué trata este documento
+  top_k: 5
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

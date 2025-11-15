@@ -1,0 +1,22 @@
+meta {
+  name: ingesta
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{BASEURL}}/ingest-pdf?pdf_path=/media/compartido/display/documentos/garantias.pdf&area=garantias&source_id=garantias1
+  body: none
+  auth: inherit
+}
+
+params:query {
+  pdf_path: /media/compartido/display/documentos/garantias.pdf
+  area: garantias
+  source_id: garantias1
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
