@@ -2,12 +2,24 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import VectorParams, Distance, PointStruct, Filter, FieldCondition, MatchValue
 from typing import List, Dict, Optional
 import logging
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 logger = logging.getLogger(__name__)
 
 
 class QdrantStorage:
-    def __init__(self, url="http://127.0.0.1:6333", collection="docs", dim=3072):
+    def __init__(self, url=None, collection=None, dim=3072):
+        # Cargar configuración desde variables de entorno
+        if url is None:
+            qdrant_host = os.getenv("QDRANT_HOST", "127.0.0.1")
+            qdrant_port = os.getenv("QDRANT_PORT", "6333")
+            url = f"http://{qdrant_host}:{qdrant_port}"
+        
+        if collection is None:
+            collection = os.getenv("QDRANT_COLLECTION", "docs")
         self.client = QdrantClient(url=url, timeout=30)
         self.collection = collection
         
