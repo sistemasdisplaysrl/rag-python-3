@@ -1,0 +1,34 @@
+version: "3.9"
+
+services:
+  rag_api:
+    image: rag-python:0.1
+    container_name: rag-python
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    ports:
+      - "8000:8000"
+
+    user: "1000:1000"
+
+    # Optional: limit memory/CPU (good for production)
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: "1"
+    #       memory: "1g"
+
+    volumes:
+      - /media/compartido/display/documentos:/app/pdfs:ro
+
+    networks:
+      - rag-net
+
+networks:
+  rag-net:
+    external: true 
+
+

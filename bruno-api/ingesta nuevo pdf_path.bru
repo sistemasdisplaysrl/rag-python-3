@@ -1,0 +1,26 @@
+meta {
+  name: ingesta nuevo pdf_path
+  type: http
+  seq: 9
+}
+
+post {
+  url: http://127.0.0.1:8001/ingest-pdf
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "pdf_path": "domino.pdf",
+    "doc_id": "domino-manual",
+    "area": "domino",
+    "doc_version": "0.1",
+    "replace_existing": true
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

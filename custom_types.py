@@ -1,24 +1,58 @@
-# se importa pydantic para crear modelos de datos con validación automática
-import pydantic
+from pydantic import BaseModel
+from typing import Optional, List, Dict
 
-# lista de fragmentos de texto (por ejemplo, trozos de un documento)
-class RAGChunkAndSrc(pydantic.BaseModel):
-    chunks: list[str]
-    source_id: str = None
 
-# cantidad de elementos o fragmentos que fueron procesados o insertados
-class RAGUpsertResult(pydantic.BaseModel):
+class IngestRequest(BaseModel):
+    """Request para ingestar un PDF"""
+    pdf_path: str
+    doc_id: str  # ID único del documento
+    area: str  # área: rrhh, marketing, almacenes, etc.
+    doc_version: str = "1.0"
+    author: Optional[str] = None
+    category: Optional[str] = None
+    replace_existing: bool = True  # Si True, elimina versión anterior
+
+
+class QueryRequest(BaseModel):
+    """Request para consultar documentos"""
+    question: str
+    area: Optional[str] = None  # Filtrar por área
+    doc_id: Optional[str] = None  # Filtrar por documento específico
+    top_k: int = 5
+
+
+class IngestResponse(BaseModel):
+    """Response de ingesta de documento"""
+    success: bool
     ingested: int
+    doc_id: str
+    area: str
+    doc_version: str
+    deleted_previous: int  # chunks eliminados de versión anterior
+    upload_date: str
 
-# lista de textos o fragmentos relevantes encontrados en la búsqueda
-class RAGSearchResult(pydantic.BaseModel):
-    contexts: list[str]
-    sources: list[str]
 
-# la respuesta generada a partir de los contextos encontrados
-# lista de fuentes que respaldan la respuesta
- # número de contextos o fragmentos usados para generar la respuesta
-class RAQQueryResult(pydantic.BaseModel):
+class QueryResponse(BaseModel):
+    """Response de consulta RAG"""
     answer: str
-    sources: list[str]
+    sources: List[str]
+    doc_ids: List[str]
     num_contexts: int
+    filters_applied: Dict[str, Optional[str]]
+
+
+class DeleteResponse(BaseModel):
+    """Response de eliminación de documento"""
+    success: bool
+    doc_id: str
+    chunks_affected: int
+
+
+class DocumentInfo(BaseModel):
+    """Información de un documento"""
+    doc_id: str
+    area: str
+    source: str
+    doc_version: str
+    upload_date: str
+    status: str

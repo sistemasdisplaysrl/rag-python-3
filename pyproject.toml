@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "fastapi>=0.121.1",
+    "gunicorn>=23.0.0",
     "llama-index-core>=0.14.8",
     "llama-index-readers-file>=0.5.4",
     "openai>=2.7.2",

@@ -1,0 +1,24 @@
+meta {
+  name: query-area-incorrecta
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{BASEURL}}/query
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "question": "cuantas fichas tiene el juego domino?",
+    "area": "generala",
+    "top_k": 5
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

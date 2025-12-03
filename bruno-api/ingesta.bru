@@ -1,0 +1,26 @@
+meta {
+  name: ingesta
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{BASEURL}}/ingest-pdf
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "pdf_path": "/media/compartido/display/documentos/generala.pdf",
+    "doc_id": "generala-manual",
+    "area": "generala",
+    "doc_version": "0.1",
+    "replace_existing": true
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
