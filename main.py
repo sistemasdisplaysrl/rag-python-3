@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import uuid
 import os
 from datetime import datetime
+from pathlib import Path
 from openai import OpenAI
 
 from data_loader import load_and_chunk_pdf, embed_texts
@@ -44,33 +45,49 @@ async def rag_ingest_pdf(request: IngestRequest):
     try:
         store = QdrantStorage()
         
-        # 1. Si se debe reemplazar, eliminar versión anterior
+        # 1. Construir la ruta completa del PDF usando pathlib
+        pdf_full_path = Path("pdfs") / request.pdf_path
+        
+        # Verificar si el archivo existe antes de proceder
+        if not pdf_full_path.exists():
+            raise HTTPException(
+                status_code=404, 
+                detail=f"Archivo PDF no encontrado: {request.pdf_path} (buscado en: {pdf_full_path})"
+            )
+        
+        if not pdf_full_path.is_file():
+            raise HTTPException(
+                status_code=400,
+                detail=f"La ruta no es un archivo válido: {request.pdf_path}"
+            )
+        
+        # 2. Si se debe reemplazar, eliminar versión anterior
         deleted_count = 0
         if request.replace_existing:
             deleted_count = store.delete_document(request.doc_id)
             logger.info(f"Eliminados {deleted_count} chunks del doc_id: {request.doc_id}")
         
-        # 2. Cargar y chunk el PDF
-        chunks = load_and_chunk_pdf(request.pdf_path)
+        # 3. Cargar y chunk el PDF (convertir Path a string para compatibilidad)
+        chunks = load_and_chunk_pdf(str(pdf_full_path))
         
         if not chunks:
             raise HTTPException(status_code=400, detail="No se pudieron extraer chunks del PDF")
         
-        # 3. Generar embeddings
+        # 4. Generar embeddings
         vecs = embed_texts(chunks)
         
-        # 4. Crear IDs únicos para cada chunk
+        # 5. Crear IDs únicos para cada chunk
         ids = [
             str(uuid.uuid5(uuid.NAMESPACE_URL, f"{request.doc_id}:v{request.doc_version}:{i}"))
             for i in range(len(chunks))
         ]
         
-        # 5. Crear payloads enriquecidos con metadata
+        # 6. Crear payloads enriquecidos con metadata
         upload_timestamp = datetime.now().isoformat()
         payloads = [
             {
                 "text": chunks[i],
-                "source": request.pdf_path,
+                "source": request.pdf_path,  # Guardamos solo el nombre del archivo
                 "doc_id": request.doc_id,
                 "area": request.area,
                 "doc_version": request.doc_version,
@@ -85,7 +102,7 @@ async def rag_ingest_pdf(request: IngestRequest):
             for i in range(len(chunks))
         ]
         
-        # 6. Upsert en Qdrant
+        # 7. Upsert en Qdrant
         store.upsert(ids, vecs, payloads)
         
         return {
@@ -98,6 +115,8 @@ async def rag_ingest_pdf(request: IngestRequest):
             "upload_date": upload_timestamp
         }
         
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error ingesting PDF: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Error processing PDF: {str(e)}")

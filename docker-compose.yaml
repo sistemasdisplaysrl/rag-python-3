@@ -22,7 +22,7 @@ services:
     #       memory: "1g"
 
     volumes:
-      - /media/compartido/display/documentos:/app/documents:ro
+      - /media/compartido/display/documentos:/app/pdfs:ro
 
     networks:
       - rag-net
