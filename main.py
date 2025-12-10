@@ -169,7 +169,7 @@ async def rag_query(request: QueryRequest):
 
         # 4. Llamar a OpenAI
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
             messages=[
                 {
                     "role": "system", 
